@@ -1,5 +1,4 @@
 #include "File.h"
-#include <utility>
 
 Dcr::File::File(std::string path, bool hasLog) : m_path(path), m_hasLog(hasLog)
 {

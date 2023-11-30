@@ -54,7 +54,9 @@ git pull --depth=1
 
 |Usage|Action|
 |-|-|
-|`gbf [-p \| --path] <file>`|实现文件中注册的行为数函数|
+|`gbf [-p] <file>`|实现文件中注册的行为数函数|
+|`gbf -l`|输出 log 信息|
+|`gbf -h`|输出 help 信息|
 |...||
 
 ### Version
@@ -65,5 +67,5 @@ git pull --depth=1
 ### TODO
 
 - 自动注册行为树函数
-- 适配不同格式注册的行为树函数
+- 自动 Drop Idle
 - ...
