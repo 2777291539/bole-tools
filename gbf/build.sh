@@ -5,7 +5,7 @@ if [ ! -d "bin" ]; then
     mkdir bin
 fi
 
-echo "开始构建"
+echo "开始构建..."
 
 # 执行 make 命令编译
 make

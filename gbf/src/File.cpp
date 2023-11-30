@@ -5,7 +5,7 @@ Dcr::File::File(std::string path) : m_path(path)
     m_fileStream.open(m_path);
     if (!m_fileStream.is_open())
     {
-        std::cerr << "Invalid file path!" + path << std::endl;
+        std::cerr << "Invalid file path: " + path << std::endl;
         exit(-1);
     }
     m_handlerFunctionTemplate = "    self.currentGameBoard:Step()\n"
