@@ -1,6 +1,7 @@
 #include "File.h"
+#include <utility>
 
-Dcr::File::File(std::string path) : m_path(path)
+Dcr::File::File(std::string path, bool hasLog) : m_path(path), m_hasLog(hasLog)
 {
     m_fileStream.open(m_path);
     if (!m_fileStream.is_open())
@@ -50,11 +51,15 @@ int Dcr::File::_GetIndexByFile(std::string fileName)
 
 void Dcr::File::_GetBehaviorFunctionByOrder()
 {
-    std::regex comment("^\\s*--");
     std::regex handlerPattern("\\{\\s*behavior\\s*=\\s*\"[^\"]+\"\\s*,\\s*handler\\s*=\\s*(?!Base)("
-                              "\\w+)\\.(\\w+)"); // handler
+                              "\\w+)\\.(\\w+)");                                   // handler
+    std::regex handlerPatternMulti("\\s*handler\\s*=\\s*(?!Base)(\\w+)\\.(\\w+)"); // handler 多行显示
     std::regex selectorPattern("\\{\\s*behavior\\s*=\\s*\"[^\"]+\"\\s*,\\s*selector\\s*=\\s*(?!Base)(\\w+)"
                                "\\.(\\w+)\\s*,\\s*yes\\s*=\\s*\"(\\w+)\"\\s*,\\s*no\\s*=\\s*\"(\\w+)"); // selector
+    std::regex selectorPatternMulti("\\s*selector\\s*=\\s*(?!Base)(\\w+)\\.(\\w+)"); // selector 多行显示
+    std::regex selectorPatternMultiYes("\\s*yes\\s*=\\s*\"(\\w+)\"");
+    std::regex selectorPatternMultiNo("\\s*no\\s*=\\s*\"(\\w+)\"");
+    std::regex comment("^\\s*--");
     std::regex functionCommentPattern("\\}\\s*,\\s*(--.+)$");
     std::string line;
     std::smatch match;
@@ -92,6 +97,35 @@ void Dcr::File::_GetBehaviorFunctionByOrder()
             }
             __AddFunction(fileName, functionInfo);
         }
+        else if (std::regex_search(line, match, handlerPatternMulti))
+        {
+            // multi handler
+            std::string fileName = match[1];
+            std::string functionName = match[2];
+            FunctionInfo functionInfo;
+            functionInfo.functionName = functionName;
+            functionInfo.functionType = Dcr::FunctionType::HANDLER;
+            // 无法识别注释
+            __AddFunction(fileName, functionInfo);
+        }
+        else if (std::regex_search(line, match, selectorPatternMulti))
+        {
+            std::string fileName = match[1];
+            std::string functionName = match[2];
+            Dcr::FunctionInfo functionInfo;
+            functionInfo.functionName = functionName;
+            functionInfo.functionType = Dcr::FunctionType::SELECTOR;
+            // 无法识别注释
+            __AddFunction(fileName, functionInfo);
+        }
+        else if (std::regex_search(line, match, selectorPatternMultiYes))
+        {
+            m_fileFunctionInfo[lastInfo.first].fileFunctionList[lastInfo.second].yes = match[1];
+        }
+        else if (std::regex_search(line, match, selectorPatternMultiNo))
+        {
+            m_fileFunctionInfo[lastInfo.first].fileFunctionList[lastInfo.second].no = match[1];
+        }
     }
 }
 void Dcr::File::__AddFunction(std::string fileName, FunctionInfo functionInfo)
@@ -101,7 +135,12 @@ void Dcr::File::__AddFunction(std::string fileName, FunctionInfo functionInfo)
             return info.functionName == functionInfo.functionName;
         }))
     {
+        if (m_hasLog)
+        {
+            std::cout << fileName << ": " << functionInfo.functionName << std::endl;
+        }
         list.push_back(functionInfo);
+        lastInfo = std::make_pair(_GetIndexByFile(fileName), list.size() - 1);
     }
 }
 

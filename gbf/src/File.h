@@ -34,7 +34,7 @@ namespace Dcr
     class File
     {
       public:
-        File(std::string path);
+        File(std::string path, bool hasLog);
         virtual ~File();
         void GenerateBehaviorFunction();
 
@@ -60,5 +60,9 @@ namespace Dcr
 
         unsigned int createCount = 0;
         unsigned int changeCount = 0;
+
+        std::pair<int, int> lastInfo;
+
+        bool m_hasLog = false;
     };
 } // namespace Dcr

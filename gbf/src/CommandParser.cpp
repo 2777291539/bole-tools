@@ -1,9 +1,11 @@
 #include "CommandParser.h"
 #include "File.h"
 
+static bool hasLog = false;
+
 Dcr::CommandParser::CommandParser(int c, char **v) : argc(c), argv(v)
 {
-    optstring = "hvp:";
+    optstring = "hvp:l";
 }
 void Dcr::CommandParser::PrintHelp()
 {
@@ -15,6 +17,7 @@ void Dcr::CommandParser::PrintHelp()
     std::cout << "  -v                Print version information" << std::endl;
     std::cout << "  -p <path>         Specify a path" << std::endl;
     std::cout << "  -h                Print this help message" << std::endl;
+    std::cout << "  -l                Print log" << std::endl;
 }
 void Dcr::CommandParser::PrintVersion()
 {
@@ -32,7 +35,7 @@ void Dcr::CommandParser::GenerateBehaviortreeFunction()
         std::cout << "Wrong file path: \"" << path << "\"" << std::endl;
         return;
     }
-    Dcr::File file{path};
+    Dcr::File file{path, hasLog};
     file.GenerateBehaviorFunction();
 }
 
@@ -61,6 +64,8 @@ void Dcr::CommandParser::parseCommands()
         case 'p':
             path = optarg;
             break;
+        case 'l':
+            hasLog = true;
         }
     }
     if (!path.empty())
