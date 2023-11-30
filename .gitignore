@@ -34,3 +34,6 @@
 # dir
 **/bin/*
 **/test/*
+
+# config
+.DS_Store
