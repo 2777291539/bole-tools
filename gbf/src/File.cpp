@@ -27,6 +27,8 @@ Dcr::File::File(std::string path) : m_path(path)
 
 Dcr::File::~File()
 {
+    std::cout << "Create " << (createCount == 1 ? "file" : "files") << " count: " << createCount << std::endl;
+    std::cout << "Change " << (changeCount == 1 ? "file" : "files") << " count: " << changeCount << std::endl;
     m_fileStream.close();
 }
 
@@ -170,7 +172,6 @@ void Dcr::File::_GenerateBehaviorFunction(int index)
             std::cerr << "Wrong Open " << targetFilePath << std::endl;
             exit(-1);
         }
-        std::cout << "Create: " << targetFilePath << std::endl;
         if (requireFlag)
         {
             __DealLuaPath(requirePath);
@@ -196,17 +197,19 @@ void Dcr::File::_GenerateBehaviorFunction(int index)
         {
             outFileStream << std::endl << std::endl << "return " + fileName;
         }
+        std::cout << "Create: " << targetFilePath << std::endl;
+        createCount++;
         outFileStream.close();
     }
     else
     {
+        bool needChange = false;
         std::ifstream preOutFileStream{targetFilePath, std::ios::in};
         if (!preOutFileStream.is_open())
         {
             std::cerr << "Wrong Open " << targetFilePath << std::endl;
             exit(-1);
         }
-        std::cout << "Change: " << targetFilePath << std::endl;
         enum class State
         {
             NORMAL,
@@ -241,6 +244,7 @@ void Dcr::File::_GenerateBehaviorFunction(int index)
                     {
                         while (currentIterator != it)
                         {
+                            needChange = true;
                             ss << std::endl << std::endl << __GenerateFunctionTemplate(fileName, *currentIterator);
                             currentIterator++;
                         }
@@ -277,17 +281,25 @@ void Dcr::File::_GenerateBehaviorFunction(int index)
         {
             while (currentIterator != fileFuncInfo.fileFunctionList.end())
             {
+                needChange = true;
                 ss << std::endl << std::endl << __GenerateFunctionTemplate(fileName, *currentIterator);
                 currentIterator++;
             }
         }
-        std::ofstream outFileStream{targetFilePath, std::ios::out};
-        if (!outFileStream.is_open())
+        if (needChange)
         {
-            std::cerr << "Wrong Open " << targetFilePath << std::endl;
-            exit(-1);
+            std::ofstream outFileStream{targetFilePath, std::ios::out};
+            if (!outFileStream.is_open())
+            {
+                std::cerr << "Wrong Open " << targetFilePath << std::endl;
+                exit(-1);
+            }
+            outFileStream << ss.str() << endSs.str();
+            std::cout << "Change: " << targetFilePath << std::endl;
+            changeCount++;
+            outFileStream.close();
         }
-        outFileStream << ss.str() << endSs.str();
+        preOutFileStream.close();
     }
 }
 

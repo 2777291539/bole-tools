@@ -57,5 +57,8 @@ namespace Dcr
         std::string m_handlerFunctionTemplate;
         std::string m_selectorFunctionFreeTemplate;
         std::string m_selectorFunctionBonusTemplate;
+
+        unsigned int createCount = 0;
+        unsigned int changeCount = 0;
     };
 } // namespace Dcr
