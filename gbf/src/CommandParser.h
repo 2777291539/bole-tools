@@ -3,7 +3,7 @@
 #include <unistd.h>
 #include <vector>
 
-#define DCR_VERSION "1.0.0"
+#define DCR_VERSION "1.1.0"
 
 namespace Dcr
 {
