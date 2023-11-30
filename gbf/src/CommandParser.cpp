@@ -7,6 +7,7 @@ Dcr::CommandParser::CommandParser(int c, char **v) : argc(c), argv(v)
 {
     optstring = "hvp:l";
 }
+
 void Dcr::CommandParser::PrintHelp()
 {
     std::cout << "Usage: "
@@ -19,10 +20,12 @@ void Dcr::CommandParser::PrintHelp()
     std::cout << "  -h                Print this help message" << std::endl;
     std::cout << "  -l                Print log" << std::endl;
 }
+
 void Dcr::CommandParser::PrintVersion()
 {
     std::cout << "Version: " << DCR_VERSION << std::endl;
 }
+
 void Dcr::CommandParser::GenerateBehaviortreeFunction()
 {
     // if (path.empty())

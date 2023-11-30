@@ -128,6 +128,7 @@ void Dcr::File::_GetBehaviorFunctionByOrder()
         }
     }
 }
+
 void Dcr::File::__AddFunction(std::string fileName, FunctionInfo functionInfo)
 {
     auto &list = m_fileFunctionInfo[_GetIndexByFile(fileName)].fileFunctionList;

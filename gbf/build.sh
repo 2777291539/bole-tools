@@ -1,6 +1,6 @@
 #!/bin/bash
 
-git pull --depth=1 --autostash
+# git pull --depth=1 --autostash
 
 # 检查是否存在 bin 目录，如果不存在则创建
 if [ ! -d "bin" ]; then
