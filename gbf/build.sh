@@ -5,9 +5,11 @@ if [ ! -d "bin" ]; then
     mkdir bin
 fi
 
-echo "开始构建..."
+# 执行 make 命令清理
+make clean
 
 # 执行 make 命令编译
+echo "开始构建..."
 make
 
 # 设置可执行程序的路径

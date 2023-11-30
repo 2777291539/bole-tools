@@ -10,7 +10,7 @@ $(TARGET): $(SRC)
 	@$(CXX) $(FLAG) -o $@ $^
 
 clean:
-	rm bin/*
+	@rm bin/*
 
 run:
 	bin/gbf
