@@ -1,5 +1,5 @@
 #include "CommandParser.h"
-#include "File.h"
+#include "View.h"
 
 static bool hasLog = false;
 
@@ -38,7 +38,7 @@ void Dcr::CommandParser::GenerateBehaviortreeFunction()
         std::cout << "Wrong file path: \"" << path << "\"" << std::endl;
         return;
     }
-    Dcr::File file{path, hasLog};
+    Dcr::View file{path, hasLog};
     file.GenerateBehaviorFunction();
 }
 
