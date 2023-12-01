@@ -43,8 +43,6 @@ void Dcr::View::_GetBehaviorFunctionByOrder()
         std::cerr << "Fail to open file: " + m_path << std::endl;
         exit(0);
     }
-    std::regex handlerPattern("\\{\\s*behavior\\s*=\\s*\"[^\"]+\"\\s*,\\s*handler\\s*=\\s*(?!Base)("
-                              "\\w+)\\.(\\w+)");                                   // handler
     std::regex handlerPatternMulti("\\s*handler\\s*=\\s*(?!Base)(\\w+)\\.(\\w+)"); // handler 多行显示
     std::regex selectorPattern("\\{\\s*behavior\\s*=\\s*\"[^\"]+\"\\s*,\\s*selector\\s*=\\s*(?!Base)(\\w+)"
                                "\\.(\\w+)\\s*,\\s*yes\\s*=\\s*\"(\\w+)\"\\s*,\\s*no\\s*=\\s*\"(\\w+)"); // selector
@@ -60,19 +58,6 @@ void Dcr::View::_GetBehaviorFunctionByOrder()
         if (std::regex_search(line, comment))
         {
             continue;
-        }
-        if (std::regex_search(line, match, handlerPattern))
-        {
-            std::string fileName = match[1];
-            std::string functionName = match[2];
-            FunctionInfo functionInfo;
-            functionInfo.functionName = functionName;
-            functionInfo.functionType = Dcr::FunctionType::HANDLER;
-            if (std::regex_search(line, match, functionCommentPattern))
-            {
-                functionInfo.comment = match[1];
-            }
-            __AddFunction(fileName, functionInfo);
         }
         else if (std::regex_search(line, match, selectorPattern))
         {
