@@ -12,7 +12,7 @@ make clean
 
 # 执行 make 命令编译
 echo "开始构建..."
-make
+bear -- make
 
 # 设置可执行程序的路径
 executable="./bin/gbf"
