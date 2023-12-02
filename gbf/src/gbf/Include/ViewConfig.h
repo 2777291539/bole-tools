@@ -8,9 +8,11 @@ namespace Dcr
     {
       public:
         void GenerateDefautConfig();                                       // 生成默认的配置文件
-        void GenerateDefautConfig(std::vector<FileFunctionInfo> fileInfo); // 生成默认的配置文件
+        void GenerateDefautConfig(std::vector<FileFunctionInfo> fileInfo); // 生成配置文件
         void ReadConfig();                                                 // 读取配置文件
-        void SetConfigFile();                                              // 设置配置文件路径
+        bool SetConfigFile(std::string);                                   // 设置配置文件路径
+
+        void PrintLog();
 
       private:
         std::string m_configFile;

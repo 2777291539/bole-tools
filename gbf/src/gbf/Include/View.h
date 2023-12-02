@@ -17,6 +17,7 @@ namespace Dcr
         std::string yes;
         std::string no;
         std::string comment;
+        std::string behaviorName;
     };
 
     struct FileFunctionInfo

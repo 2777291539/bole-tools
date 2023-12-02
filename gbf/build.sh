@@ -23,7 +23,8 @@ show_progress()
     local current_frame=0
     local current_work=$1
 
-    echo -n "$current_work...    "
+    echo -n -e '\e[?25l'
+    printf "%s    " "$current_work..."
 
     command_make &
 
@@ -31,17 +32,21 @@ show_progress()
     trap "kill $pid 2> /dev/null" EXIT
 
     while kill -0 $pid >/dev/null 2>&1; do
-        echo -ne "\b\b\b[${frames[current_frame]}]"
+        printf "\b\b\b[%s]" "${frames[current_frame]}"
+        # echo -ne "\b\b\b[${frames[current_frame]}]"
 
-        ((current_frame++))
-        if [ $current_frame -eq ${#frames[@]} ]; then
-            current_frame=0
+        let current_frame=$current_frame+1
+        if [ $current_frame -eq ${#frames[@]} ]
+        then
+            let current_frame=0
         fi
 
         sleep $delay
     done
 
-    echo -e ""
+    # echo -e ""
+    echo -n -e '\e[?25h'
+    printf "\n"
     wait $pid
     trap - EXIT
 }

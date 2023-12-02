@@ -5,6 +5,10 @@
 #include <unistd.h>
 #include <vector>
 
+#include "Processor.h"
+#include "View.h"
+#include "ViewConfig.h"
+
 #define DCR_VERSION "1.1.0"
 
 namespace Dcr

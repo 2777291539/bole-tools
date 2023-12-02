@@ -1,12 +1,11 @@
 #include "CommandParser.h"
-#include "Processor.h"
-#include "View.h"
+#include "ViewConfig.h"
 
 static bool hasLog = false;
 
 Dcr::CommandParser::CommandParser(int c, char **v) : argc(c), argv(v)
 {
-    optstring = "hvp:li";
+    optstring = "hvp:lit:";
 }
 
 void Dcr::CommandParser::ParseCommands()
@@ -41,6 +40,13 @@ void Dcr::CommandParser::ParseCommands()
                 break;
             case 'l':
                 hasLog = true;
+                break;
+            case 't':
+                ViewConfig viewConfig;
+                viewConfig.SetConfigFile(optarg);
+                viewConfig.ReadConfig();
+                viewConfig.PrintLog();
+                break;
         }
     }
     if (!path.empty())
@@ -156,7 +162,6 @@ void Dcr::CommandParser::__PrintHelp()
 
 bool Dcr::CommandParser::__CheckPath(std::string &path)
 {
-
     try
     {
         if (path.empty())
