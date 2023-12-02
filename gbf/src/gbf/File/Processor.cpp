@@ -25,15 +25,15 @@ void Dcr::Processor::PrintInfo()
     std::cout << "Change " << (changeCount == 1 ? "file" : "files") << " count: " << changeCount << std::endl;
 }
 
-void Dcr::Processor::GenerateBehaviorFunction(std::vector<FileFunctionInfo> fileFunctionInfo)
+void Dcr::Processor::ImplementBehaviorFunction(std::vector<FileFunctionInfo> fileFunctionInfo)
 {
     for (int i = 0; i < fileFunctionInfo.size(); i++)
     {
-        __GenerateBehaviorFunction(fileFunctionInfo, i);
+        __ImplementBehaviorFunction(fileFunctionInfo, i);
     }
 }
 
-void Dcr::Processor::__GenerateBehaviorFunction(std::vector<FileFunctionInfo> fileFunctionInfo, int index)
+void Dcr::Processor::__ImplementBehaviorFunction(std::vector<FileFunctionInfo> fileFunctionInfo, int index)
 {
     // _GetBehaviorFunctionByOrder();
     if (index < 0 || index >= fileFunctionInfo.size())
@@ -64,15 +64,15 @@ void Dcr::Processor::__GenerateBehaviorFunction(std::vector<FileFunctionInfo> fi
         {
             if (iterator == fileFuncInfo.fileFunctionList.begin())
             {
-                outFileStream << __GenerateFunctionTemplate(fileName, *iterator) << std::endl;
+                outFileStream << __ImplementFunctionTemplate(fileName, *iterator) << std::endl;
             }
             else if (iterator == fileFuncInfo.fileFunctionList.end() - 1)
             {
-                outFileStream << std::endl << __GenerateFunctionTemplate(fileName, *iterator);
+                outFileStream << std::endl << __ImplementFunctionTemplate(fileName, *iterator);
             }
             else
             {
-                outFileStream << std::endl << __GenerateFunctionTemplate(fileName, *iterator) << std::endl;
+                outFileStream << std::endl << __ImplementFunctionTemplate(fileName, *iterator) << std::endl;
             }
         }
         if (requireFlag)
@@ -127,7 +127,7 @@ void Dcr::Processor::__GenerateBehaviorFunction(std::vector<FileFunctionInfo> fi
                         while (currentIterator != it)
                         {
                             needChange = true;
-                            ss << std::endl << std::endl << __GenerateFunctionTemplate(fileName, *currentIterator);
+                            ss << std::endl << std::endl << __ImplementFunctionTemplate(fileName, *currentIterator);
                             currentIterator++;
                         }
                         currentIterator++; // skip this function
@@ -164,7 +164,7 @@ void Dcr::Processor::__GenerateBehaviorFunction(std::vector<FileFunctionInfo> fi
             while (currentIterator != fileFuncInfo.fileFunctionList.end())
             {
                 needChange = true;
-                ss << std::endl << std::endl << __GenerateFunctionTemplate(fileName, *currentIterator);
+                ss << std::endl << std::endl << __ImplementFunctionTemplate(fileName, *currentIterator);
                 currentIterator++;
             }
         }
@@ -185,7 +185,7 @@ void Dcr::Processor::__GenerateBehaviorFunction(std::vector<FileFunctionInfo> fi
     }
 }
 
-std::string Dcr::Processor::__GenerateFunctionTemplate(std::string fileName, const FunctionInfo &info)
+std::string Dcr::Processor::__ImplementFunctionTemplate(std::string fileName, const FunctionInfo &info)
 {
     std::string common = "function " + fileName + ":" + info.functionName + "()\n";
     if (!info.comment.empty())

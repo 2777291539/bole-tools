@@ -3,5 +3,5 @@
 int main(int argc, char **argv)
 {
     Dcr::CommandParser commandParser(argc, argv);
-    commandParser.parseCommands();
+    commandParser.ParseCommands();
 }

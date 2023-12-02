@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAG = -m64 -std=c++17 -I$(INCLUDE)
+CXXFLAG = -m64 -std=c++17 -O3 -I$(INCLUDE)
 
 INCLUDE = $(CURDIR)/src/gbf/Include
 
@@ -10,12 +10,12 @@ TARGET = bin/gbf
 All: $(TARGET)
 
 $(TARGET): $(SRCS)
-	$(CXX) $(CXXFLAG) -o $@ $^
+	@$(CXX) $(CXXFLAG) -o $@ $^
 
 clean:
 	@rm bin/*
 
 run:
-	bin/gbf
+	@bin/gbf
 
 .PHONY: clean run
