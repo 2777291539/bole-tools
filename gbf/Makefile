@@ -1,13 +1,16 @@
 CXX = g++
-FLAG = -m64 -std=c++17 -I$(CURDIR)/src/Include/
+CXXFLAG = -m64 -std=c++17 -I$(INCLUDE)
 
-SRC = $(wildcard src/*.cpp)
+INCLUDE = $(CURDIR)/src/gbf/Include
+
+SRCS := $(shell find src/gbf -type f -name "*.cpp")
+
 TARGET = bin/gbf
 
 All: $(TARGET)
 
-$(TARGET): $(SRC)
-	$(CXX) $(FLAG) -o $@ $^
+$(TARGET): $(SRCS)
+	$(CXX) $(CXXFLAG) -o $@ $^
 
 clean:
 	@rm bin/*

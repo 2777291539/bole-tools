@@ -1,5 +1,4 @@
 #include "View.h"
-#include "Include/View.h"
 
 Dcr::View::View(std::string path, bool hasLog) : Dcr::File(path, hasLog)
 {
