@@ -1,5 +1,6 @@
 #include "CommandParser.h"
 #include "ViewConfig.h"
+#include <fstream>
 
 #ifdef __LINUX__
 #include <limits.h>
@@ -54,8 +55,10 @@ void Dcr::CommandParser::ParseCommands()
 {
     if (argc == 1)
     {
-        std::cout << "嗯?" << std::endl;
-        exit(0);
+        __DefaultGenerate();
+        return;
+        // std::cout << "嗯?" << std::endl;
+        // exit(0);
     }
     if (argc == 2 && argv[1][0] != '-')
     {
@@ -191,21 +194,8 @@ bool Dcr::CommandParser::__InterActionGenerate()
     {
         case '1':
         case 'c':
-        {
-            ViewConfig viewConfig;
-            std::string configPath;
-#ifdef __LINUX__
-            configPath = get_executable_path() + "/Default/Config";
-#endif
-#ifdef __MACOS
-#endif
-            Dcr::Processor processorFile{configPath, hasLog};
-            viewConfig.SetConfigFile(configPath);
-            viewConfig.ReadConfig();
-            processorFile.ImplementBehaviorFunction(viewConfig.GetFunctionInfo()); // 生成函数实现
-            processorFile.PrintInfo();
+            __DefaultGenerate();
             break;
-        }
         case '2':
         case 'p':
             do
@@ -269,5 +259,28 @@ bool Dcr::CommandParser::__CheckPath(std::string &path)
         std::cout << std::endl << err.what() << std::endl;
         return false;
     }
+    return true;
+}
+
+bool Dcr::CommandParser::__DefaultGenerate()
+{
+    ViewConfig viewConfig;
+    std::string configPath;
+    std::string targetPath;
+    configPath = get_executable_path() + "/Default/Config";
+    targetPath = get_executable_path() + "/Default/Path";
+    viewConfig.SetConfigFile(configPath); // 读取配置文件
+    viewConfig.ReadConfig();
+    std::ifstream pathFile{targetPath};
+    if (!pathFile.is_open())
+    {
+        std::cerr << "can not open Path file" << std::endl;
+        return false;
+    }
+    pathFile >> targetPath;
+    Dcr::Processor processorFile{targetPath, hasLog};
+    processorFile.ImplementBehaviorFunction(viewConfig.GetFunctionInfo()); // 生成函数实现
+    processorFile.PrintInfo();
+    pathFile.close();
     return true;
 }

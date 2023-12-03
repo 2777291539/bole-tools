@@ -1,4 +1,5 @@
 #include "View.h"
+#include <regex>
 
 Dcr::View::View(std::string path, bool hasLog) : Dcr::File(path, hasLog)
 {
@@ -109,9 +110,9 @@ int Dcr::View::_GetIndexByFile(std::string fileName)
 void Dcr::View::__AddFunction(std::string fileName, FunctionInfo functionInfo)
 {
     auto &list = m_fileFunctionInfo[_GetIndexByFile(fileName)].fileFunctionList;
-    if (std::none_of(list.begin(), list.end(), [&functionInfo](FunctionInfo info) -> bool {
-            return info.functionName == functionInfo.functionName;
-        }))
+    if (std::none_of(list.begin(), list.end(),
+                     [&functionInfo](FunctionInfo info) -> bool
+                     { return info.functionName == functionInfo.functionName; }))
     {
         if (m_hasLog)
         {
@@ -120,4 +121,103 @@ void Dcr::View::__AddFunction(std::string fileName, FunctionInfo functionInfo)
         list.push_back(functionInfo);
         lastInfo = std::make_pair(_GetIndexByFile(fileName), list.size() - 1);
     }
+}
+
+void Dcr::View::GenerateRegisterBehavior(const std::vector<FileFunctionInfo> &info)
+{
+    std::ifstream in{m_path};
+    if (!in.is_open())
+    {
+        std::cerr << "failed to open: " << m_path << std::endl;
+        return;
+    }
+    std::string line;
+    std::regex start("^function View:RegisterBehaviorTree()");
+    std::regex left("\\{");
+    std::regex right("\\}");
+    enum class State
+    {
+        WAIT,
+        START,
+        END,
+    };
+    State currentState = State::WAIT;
+    std::smatch match;
+    unsigned count = 0;
+    bool isStart = false;
+    std::stringstream ss;
+    bool isComplete = false;
+    while (std::getline(in, line))
+    {
+        if (currentState == State::WAIT && std::regex_search(line, match, start))
+        {
+            currentState = State::START;
+        }
+        if (currentState == State::START)
+        {
+            if (std::regex_search(line, match, left))
+            {
+                ++count;
+                isStart = true;
+            }
+            else if (std::regex_search(line, match, right))
+            {
+                --count;
+            }
+            if (isStart && count == 1 && !isComplete)
+            {
+                ss << line << std::endl;
+                for (const auto &file : info)
+                {
+                    ss << "\t\t";
+                    ss << R"([")" << file.boardName << R"("] = {)" << std::endl;
+                    for (const auto &func : file.fileFunctionList)
+                    {
+                        ss << "\t\t\t";
+                        ss << R"({behavior = ")" << func.behaviorName << R"(",)";
+                        ss << "\t\t\t";
+                        if (func.functionType == FunctionType::HANDLER)
+                        {
+                            ss << R"(handler = )";
+                            ss << (func.isBase ? "Base." : file.fileName + ".") << func.functionName << R"(},)";
+                        }
+                        else if (func.functionType == FunctionType::SELECTOR)
+                        {
+                            ss << R"(selector = )";
+                            ss << (func.isBase ? "Base." : file.fileName + ".") << func.functionName << R"(, )";
+                            ss << R"(yes = ")" << func.yes << R"(", )";
+                            ss << R"(no = ")" << func.no << R"("},)";
+                        }
+                        if (!func.comment.empty())
+                        {
+                            ss << R"( -- )" << func.comment;
+                        }
+                        ss << std::endl;
+                    }
+                    ss << "\t\t";
+                    ss << R"(},)" << std::endl;
+                }
+                isComplete = true;
+            }
+            if (isStart && count == 0)
+            {
+                currentState = State::END;
+            }
+            if (!isComplete)
+            {
+                ss << line << std::endl;
+            }
+        }
+        if (currentState != State::START)
+        {
+            ss << line;
+        }
+    }
+    std::ofstream out{m_path};
+    if (out.is_open())
+    {
+        out << ss.str();
+    }
+    in.close();
+    out.close();
 }

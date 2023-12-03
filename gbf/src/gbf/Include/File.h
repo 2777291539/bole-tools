@@ -18,8 +18,6 @@ namespace Dcr
         virtual ~File();
 
       protected:
-        void _SetTargetFileInfo(); // 传入文件的目录
-
         std::string m_path;               // 文件路径
         bool m_hasLog = false;            // 是否打印 Log
         std::string m_targetFilePathHead; // 生成文件的目录

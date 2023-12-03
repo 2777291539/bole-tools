@@ -18,12 +18,14 @@ namespace Dcr
         std::string no;
         std::string comment;
         std::string behaviorName;
+        bool isBase = false;
     };
 
     struct FileFunctionInfo
     {
         std::string fileName;
         std::vector<FunctionInfo> fileFunctionList;
+        std::string boardName;
     };
 
     class View : public File
@@ -33,6 +35,7 @@ namespace Dcr
         virtual ~View();
         void GenerateBehaviorFunctionInfo(); // 生成行为树函数的信息
         std::vector<FileFunctionInfo> GetFunctionInfo();
+        void GenerateRegisterBehavior(const std::vector<FileFunctionInfo> &);
 
       protected:
         void _GetBehaviorFunctionByOrder(); // 分析 View 文件，获取行为树函数信息

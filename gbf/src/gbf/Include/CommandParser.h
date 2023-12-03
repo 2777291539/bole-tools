@@ -35,6 +35,8 @@ namespace Dcr
         bool __ImplementBehaviortreeFunction(std::string &); // 行为树函数实现
         void __PrintHelp();                                  // 查看帮助信息
 
+        bool __DefaultGenerate();
+
         bool __CheckPath(std::string &); // 异常处理
 
       private:

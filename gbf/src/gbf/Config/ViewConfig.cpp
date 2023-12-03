@@ -52,8 +52,9 @@ void Dcr::ViewConfig::ReadConfig()
     std::string line;
     std::regex comment("^\\s*(--\\s*.+)$");
     std::regex filePattern("^\\s*#\\s*(\\w+)");
-    std::regex functionPattern("^\\s*(\\w+)");
+    std::regex functionPattern("^\\s*\\*?(\\w+)");
     std::regex selectPattern("^\\s*(\\w+)\\s+(\\w+)\\s+(\\w+)");
+    std::regex isBase("^\\s*\\*");
     std::smatch match;
     std::string commentStr;
     while (std::getline(in, line))
@@ -69,6 +70,7 @@ void Dcr::ViewConfig::ReadConfig()
             std::string file_name = match[1];
             file_name[0] = toupper(file_name[0]);
             info.fileName = "Processor" + file_name;
+            info.boardName = file_name;
             m_fileFunctionInfo.push_back(info);
         }
         else if (std::regex_search(line, match, functionPattern))
@@ -110,6 +112,14 @@ void Dcr::ViewConfig::ReadConfig()
             {
                 info.functionType = FunctionType::HANDLER;
             }
+            if (std::regex_search(line, match, isBase))
+            {
+                info.isBase = true;
+            }
+            else
+            {
+                info.isBase = false;
+            }
             (end(m_fileFunctionInfo) - 1)->fileFunctionList.push_back(info);
         }
     }
@@ -137,6 +147,7 @@ void Dcr::ViewConfig::PrintLog()
                 std::cout << "\tYes: " << funcInfo.yes << std::endl;
                 std::cout << "\tNo: " << funcInfo.no << std::endl;
             }
+            std::cout << "\tBase: " << funcInfo.isBase << std::endl;
         }
     }
 }
