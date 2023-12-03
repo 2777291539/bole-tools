@@ -1,11 +1,53 @@
 #include "CommandParser.h"
 #include "ViewConfig.h"
 
+#ifdef __LINUX__
+#include <limits.h>
+#include <unistd.h>
+
+std::string get_executable_path()
+{
+    char buf[PATH_MAX];
+    ssize_t len = readlink("/proc/self/exe", buf, sizeof(buf) - 1);
+    if (len != -1)
+    {
+        buf[len] = '\0';
+        return std::filesystem::path(buf).parent_path().parent_path().string();
+        // return std::string(buf);
+    }
+    else
+    {
+        return "";
+    }
+    // std::filesystem::path executablePath = std::filesystem::path("/proc/self/exe");
+    // return executablePath.parent_path().string();
+}
+#endif
+
+#ifdef __MACOS__
+#include <mach-o/dyld.h>
+
+std::string get_executable_path()
+{
+    char buf[1024];
+    uint32_t size = sizeof(buf);
+    if (_NSGetExecutablePath(buf, &size) == 0)
+    {
+        return std::filesystem::path(buf).parent_path().parent_path().string();
+        // return std::string(buf);
+    }
+    else
+    {
+        return "";
+    }
+}
+#endif
+
 static bool hasLog = false;
 
 Dcr::CommandParser::CommandParser(int c, char **v) : argc(c), argv(v)
 {
-    optstring = "hvp:lit:";
+    optstring = "hvp:li";
 }
 
 void Dcr::CommandParser::ParseCommands()
@@ -40,12 +82,6 @@ void Dcr::CommandParser::ParseCommands()
                 break;
             case 'l':
                 hasLog = true;
-                break;
-            case 't':
-                ViewConfig viewConfig;
-                viewConfig.SetConfigFile(optarg);
-                viewConfig.ReadConfig();
-                viewConfig.PrintLog();
                 break;
         }
     }
@@ -105,17 +141,29 @@ void Dcr::CommandParser::_InterAction()
             case '1':
             case 'd':
                 break;
-            case 2:
+            case '2':
             case 'c':
                 break;
-            case 3:
+            case '3':
             case 'r':
+            {
+                ViewConfig viewConfig;
+                std::string configPath;
+#ifdef __LINUX__
+                configPath = get_executable_path() + "/Default/Config";
+#endif
+#ifdef __MACOS
+#endif
+                viewConfig.SetConfigFile(configPath);
+                viewConfig.ReadConfig();
+                viewConfig.PrintLog();
                 break;
+            }
             case '4':
             case 'g':
                 if (__InterActionGenerate())
                 {
-                    return;
+                    // return;
                 }
                 break;
             case '5':
@@ -134,18 +182,45 @@ bool Dcr::CommandParser::__InterActionGenerate()
 {
     std::cout << std::endl;
     std::cout << "*** 4.generate(q:quit) ***" << std::endl;
+    std::cout << "1: config\t2: path\t" << std::endl;
+    std::cout << "What now> ";
+    char in;
+    std::cin >> in;
     std::string path;
-    do
+    switch (in)
     {
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        path.clear();
-        std::cout << "path> ";
-        std::cin >> path;
-        if (path.size() == 1 and *begin(path) == 'q')
+        case '1':
+        case 'c':
         {
-            return false;
+            ViewConfig viewConfig;
+            std::string configPath;
+#ifdef __LINUX__
+            configPath = get_executable_path() + "/Default/Config";
+#endif
+#ifdef __MACOS
+#endif
+            Dcr::Processor processorFile{configPath, hasLog};
+            viewConfig.SetConfigFile(configPath);
+            viewConfig.ReadConfig();
+            processorFile.ImplementBehaviorFunction(viewConfig.GetFunctionInfo()); // 生成函数实现
+            processorFile.PrintInfo();
+            break;
         }
-    } while (!__ImplementBehaviortreeFunction(path));
+        case '2':
+        case 'p':
+            do
+            {
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                path.clear();
+                std::cout << "path> ";
+                std::cin >> path;
+                if (path.size() == 1 and *begin(path) == 'q')
+                {
+                    return false;
+                }
+            } while (!__ImplementBehaviortreeFunction(path));
+            break;
+    }
     return true;
 }
 

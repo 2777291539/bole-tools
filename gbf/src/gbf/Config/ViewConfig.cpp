@@ -50,7 +50,7 @@ void Dcr::ViewConfig::ReadConfig()
         exit(0);
     }
     std::string line;
-    std::regex comment("^\\s*--\\s*(.+)$");
+    std::regex comment("^\\s*(--\\s*.+)$");
     std::regex filePattern("^\\s*#\\s*(\\w+)");
     std::regex functionPattern("^\\s*(\\w+)");
     std::regex selectPattern("^\\s*(\\w+)\\s+(\\w+)\\s+(\\w+)");
@@ -120,11 +120,28 @@ void Dcr::ViewConfig::PrintLog()
 {
     for (const FileFunctionInfo &fileInfo : m_fileFunctionInfo)
     {
+        std::cout << std::endl;
         std::cout << "----------" << fileInfo.fileName << "-----------" << std::endl;
         for (const FunctionInfo &funcInfo : fileInfo.fileFunctionList)
         {
-            std::cout << funcInfo.behaviorName << " " << (int)funcInfo.functionType << " " << funcInfo.functionName
-                      << " " << funcInfo.yes << " " << funcInfo.no << " " << funcInfo.comment << std::endl;
+            std::cout << std::endl;
+            if (!funcInfo.comment.empty())
+            {
+                std::cout << "\t" << funcInfo.comment << std::endl;
+            }
+            std::cout << "\tBehavior Name: " << funcInfo.behaviorName << std::endl;
+            std::cout << "\tFunction Type: " << ((int)funcInfo.functionType == 0 ? "HANDLER" : "SELECTOR") << std::endl;
+            std::cout << "\tFunction Name: " << funcInfo.functionName << std::endl;
+            if ((int)funcInfo.functionType)
+            {
+                std::cout << "\tYes: " << funcInfo.yes << std::endl;
+                std::cout << "\tNo: " << funcInfo.no << std::endl;
+            }
         }
     }
+}
+
+std::vector<Dcr::FileFunctionInfo> Dcr::ViewConfig::GetFunctionInfo()
+{
+    return m_fileFunctionInfo;
 }
