@@ -138,6 +138,10 @@ void Dcr::View::_GetBehaviorFunctionByOrder()
             FunctionInfo functionInfo;
             functionInfo.functionName = functionName;
             functionInfo.functionType = Dcr::FunctionType::HANDLER;
+            if (std::regex_search(line, match, functionCommentPattern))
+            {
+                functionInfo.comment = match[1];
+            }
             if (std::regex_search(line, match, behaviorName))
             {
                 functionInfo.behaviorName = match[1];
@@ -154,6 +158,10 @@ void Dcr::View::_GetBehaviorFunctionByOrder()
             functionInfo.functionName = functionName;
             functionInfo.functionType = Dcr::FunctionType::HANDLER;
             functionInfo.isBase = true;
+            if (std::regex_search(line, match, functionCommentPattern))
+            {
+                functionInfo.comment = match[1];
+            }
             if (std::regex_search(line, match, behaviorName))
             {
                 functionInfo.behaviorName = match[1];
@@ -168,6 +176,10 @@ void Dcr::View::_GetBehaviorFunctionByOrder()
             Dcr::FunctionInfo functionInfo;
             functionInfo.functionName = functionName;
             functionInfo.functionType = Dcr::FunctionType::SELECTOR;
+            if (std::regex_search(line, match, functionCommentPattern))
+            {
+                functionInfo.comment = match[1];
+            }
             if (std::regex_search(line, match, behaviorName))
             {
                 functionInfo.behaviorName = match[1];
@@ -183,6 +195,10 @@ void Dcr::View::_GetBehaviorFunctionByOrder()
             functionInfo.functionName = functionName;
             functionInfo.functionType = Dcr::FunctionType::SELECTOR;
             functionInfo.isBase = true;
+            if (std::regex_search(line, match, functionCommentPattern))
+            {
+                functionInfo.comment = match[1];
+            }
             if (std::regex_search(line, match, behaviorName))
             {
                 functionInfo.behaviorName = match[1];

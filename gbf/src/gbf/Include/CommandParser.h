@@ -10,7 +10,7 @@
 #include "View.h"
 #include "ViewConfig.h"
 
-#define DCR_VERSION "1.1.0"
+#define DCR_VERSION "2.0.0"
 
 namespace Dcr
 {

@@ -144,7 +144,7 @@ void Dcr::CommandParser::_InterAction()
     {
         std::cout << std::endl;
         std::cout << "*** Commands ***" << std::endl;
-        std::cout << "1: register\t2: config\t3: dry-run" << std::endl;
+        std::cout << "1: config\t2: register\t3: dry-run" << std::endl;
         std::cout << "4: generate\t5: quit\t\t6: help\t" << std::endl;
         std::cout << "What now> ";
         char in;
@@ -152,14 +152,14 @@ void Dcr::CommandParser::_InterAction()
         switch (in)
         {
             case '1':
-            case 'r':
-                if (__DefaultRegister())
+            case 'c':
+                if (__GenerateConfig())
                 {
                 }
                 break;
             case '2':
-            case 'c':
-                if (__GenerateConfig())
+            case 'r':
+                if (__DefaultRegister())
                 {
                 }
                 break;
@@ -229,10 +229,10 @@ bool Dcr::CommandParser::__InterActionGenerate()
 void Dcr::CommandParser::__PrintHelp()
 {
     std::cout << std::endl;
-    std::cout << "1. default:\t 生成默认配置文件" << std::endl;
-    std::cout << "2. config:\t 生成对应配置文件" << std::endl;
-    std::cout << "3. result:\t 查看结果" << std::endl;
-    std::cout << "4. generate:\t 生成或实现行为树函数" << std::endl;
+    std::cout << "1. config:\t 生成对应配置文件" << std::endl;
+    std::cout << "2. register:\t 注册行为树函数" << std::endl;
+    std::cout << "3. dry-run:\t 查看结果" << std::endl;
+    std::cout << "4. generate:\t 实现行为树函数" << std::endl;
     std::cout << "5. quit:\t 退出" << std::endl;
     std::cout << std::endl;
 }
