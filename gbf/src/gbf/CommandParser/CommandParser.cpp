@@ -1,6 +1,5 @@
 #include "CommandParser.h"
 #include "ViewConfig.h"
-#include <fstream>
 
 #ifdef __LINUX__
 #include <limits.h>
@@ -30,12 +29,22 @@ std::string get_executable_path()
 
 std::string get_executable_path()
 {
-    char buf[1024];
-    uint32_t size = sizeof(buf);
-    if (_NSGetExecutablePath(buf, &size) == 0)
+    char path[PATH_MAX];
+    uint32_t size = sizeof(path);
+    if (_NSGetExecutablePath(path, &size) == 0)
     {
-        return std::filesystem::path(buf).parent_path().parent_path().string();
-        // return std::string(buf);
+        // Resolve symbolic links to get the real path
+        char *real_path = realpath(path, NULL);
+        if (real_path != NULL)
+        {
+            std::string ret = std::filesystem::path(real_path).parent_path().parent_path().string();
+            free(real_path);
+            return ret;
+        }
+        else
+        {
+            return "";
+        }
     }
     else
     {
@@ -152,11 +161,7 @@ void Dcr::CommandParser::_InterAction()
             {
                 ViewConfig viewConfig;
                 std::string configPath;
-#ifdef __LINUX__
                 configPath = get_executable_path() + "/Default/Config";
-#endif
-#ifdef __MACOS
-#endif
                 viewConfig.SetConfigFile(configPath);
                 viewConfig.ReadConfig();
                 viewConfig.PrintLog();

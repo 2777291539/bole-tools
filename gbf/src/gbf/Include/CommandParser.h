@@ -1,4 +1,5 @@
 #pragma once
+#include <fstream>
 #include <iostream>
 #include <stdexcept>
 #include <string>
@@ -15,15 +16,15 @@ namespace Dcr
 {
     class CommandParser
     {
-      public:
+    public:
         CommandParser(int, char **);
         void ParseCommands(); // 解析
 
-      protected:
+    protected:
         void _InterAction(); // 进入交互模式
         void _PrintHelp();   // 查看帮助信息
 
-      private:
+    private:
         void __PrintVersion(); // 版本号
 
         bool __InterActionGenerate(); // 实现步骤
@@ -39,7 +40,7 @@ namespace Dcr
 
         bool __CheckPath(std::string &); // 异常处理
 
-      private:
+    private:
         int argc;
         char **argv;
         std::string optstring;

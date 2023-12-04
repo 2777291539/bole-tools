@@ -9,7 +9,7 @@ fi
 command_make()
 {
     if [ "$os_type" == "Darwin" ]; then
-        git pull --depth=1 --autostash
+        # git pull --depth=1 --autostash
         bear -- make
     elif [ "$os_type" == "Linux" ]; then
         bear make
@@ -23,7 +23,9 @@ show_progress()
     local current_frame=0
     local current_work=$1
 
-    echo -n -e '\e[?25l'
+    if [ "$os_type" == "Linux" ]; then
+        echo -n -e '\e[?25l'
+    fi
     printf "%s    " "$current_work..."
 
     command_make &
@@ -45,7 +47,9 @@ show_progress()
     done
 
     # echo -e ""
-    echo -n -e '\e[?25h'
+    if [ "$os_type" == "Linux" ]; then
+        echo -n -e '\e[?25h'
+    fi
     printf "\n"
     wait $pid
     trap - EXIT
@@ -80,8 +84,8 @@ show_progress "构建中"
 executable="./bin/gbf"
 
 if [ -f "$executable" ]; then
-    if [ ! -L /usr/local/bin/gbf ]; then
-        echo "进行软链接"
+    if [ -L /usr/local/bin/gbf ]; then
+        rm /usr/local/bin/gbf
         ln -s "$(pwd)/bin/gbf" /usr/local/bin
     fi
     echo "构建成功!"

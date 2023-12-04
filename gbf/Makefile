@@ -21,7 +21,7 @@ $(TARGET): $(SRCS)
 	@$(CXX) $(CXXFLAG) -o $@ $^
 
 clean:
-	@rm bin/*
+	@rm bin/gbf
 
 run:
 	@bin/gbf
