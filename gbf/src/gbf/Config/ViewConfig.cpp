@@ -162,7 +162,6 @@ void Dcr::ViewConfig::GenerateDefautConfig(const std::vector<FileFunctionInfo> &
     std::stringstream ss;
     for (const auto &file : fileInfo)
     {
-        std::cout << file.fileName << " " << file.boardName << std::endl;
         if (file.boardName.empty())
         {
             continue;
