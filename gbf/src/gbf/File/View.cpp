@@ -230,11 +230,11 @@ void Dcr::View::__AddFunction(std::string fileName, FunctionInfo functionInfo)
 {
     if (fileName == "Base")
     {
-        if ((m_fileFunctionInfo.end() - 1)->fileName == currentFile)
-        {
-            (m_fileFunctionInfo.end() - 1)->fileFunctionList.push_back(functionInfo);
-            return;
-        }
+        // if (m_fileFunctionInfo.size() && (m_fileFunctionInfo.end() - 1)->fileName == currentFile)
+        // {
+        //     (m_fileFunctionInfo.end() - 1)->fileFunctionList.push_back(functionInfo);
+        //     return;
+        // }
         fileName = currentFile;
     }
     auto &list = m_fileFunctionInfo[_GetIndexByFile(fileName)].fileFunctionList;
