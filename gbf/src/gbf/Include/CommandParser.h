@@ -14,6 +14,8 @@
 
 namespace Dcr
 {
+    std::string get_executable_path();
+
     class CommandParser
     {
     public:
@@ -37,6 +39,8 @@ namespace Dcr
         void __PrintHelp();                                  // 查看帮助信息
 
         bool __DefaultGenerate();
+        bool __DefaultRegister();
+        bool __GenerateConfig();
 
         bool __CheckPath(std::string &); // 异常处理
 

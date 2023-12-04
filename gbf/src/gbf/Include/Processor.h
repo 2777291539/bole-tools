@@ -6,14 +6,14 @@ namespace Dcr
 {
     class Processor : File
     {
-      public:
+    public:
         Processor(std::string path, bool hasLog);
         void ImplementBehaviorFunction(
-            std::vector<FileFunctionInfo> m_fileFunctionInfo); // 根据文件函数信息和 index 生成行为树函数的实现
+            const std::vector<FileFunctionInfo> &m_fileFunctionInfo); // 根据文件函数信息和 index 生成行为树函数的实现
         void PrintInfo();
 
-      private:
-        void __ImplementBehaviorFunction(std::vector<FileFunctionInfo> m_fileFunctionInfo,
+    private:
+        void __ImplementBehaviorFunction(const std::vector<FileFunctionInfo> &m_fileFunctionInfo,
                                          int index); // 根据文件函数信息和 index 生成行为树函数的实现
         std::string __ImplementFunctionTemplate(std::string fileName,
                                                 const FunctionInfo &info); // 生成函数实现的代码字符串

@@ -156,3 +156,49 @@ std::vector<Dcr::FileFunctionInfo> Dcr::ViewConfig::GetFunctionInfo()
 {
     return m_fileFunctionInfo;
 }
+
+void Dcr::ViewConfig::GenerateDefautConfig(const std::vector<FileFunctionInfo> &fileInfo)
+{
+    std::stringstream ss;
+    for (const auto &file : fileInfo)
+    {
+        std::cout << file.fileName << " " << file.boardName << std::endl;
+        if (file.boardName.empty())
+        {
+            continue;
+        }
+        ss << R"(#)";
+        ss << file.boardName << std::endl;
+        for (const auto &func : file.fileFunctionList)
+        {
+            if (!func.comment.empty())
+            {
+                ss << "    ";
+                ss << func.comment << std::endl;
+            }
+            ss << "    ";
+            if (func.isBase)
+            {
+                ss << R"(*)";
+            }
+            ss << func.behaviorName;
+            if (func.functionType == FunctionType::SELECTOR)
+            {
+                ss << " " << func.yes;
+                ss << " " << func.no;
+            }
+            ss << std::endl;
+        }
+    }
+    std::string configPath = Dcr::get_executable_path() + "/Default/Config";
+    std::ofstream out{configPath};
+    if (out.is_open())
+    {
+        out << ss.str();
+    }
+    else
+    {
+        std::cerr << "路径错误🙅" << std::endl;
+        exit(0);
+    }
+}

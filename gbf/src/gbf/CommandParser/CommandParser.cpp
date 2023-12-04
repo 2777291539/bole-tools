@@ -1,11 +1,14 @@
 #include "CommandParser.h"
+#include "View.h"
 #include "ViewConfig.h"
+
+static bool hasLog = false;
 
 #ifdef __LINUX__
 #include <limits.h>
 #include <unistd.h>
 
-std::string get_executable_path()
+std::string Dcr::get_executable_path()
 {
     char buf[PATH_MAX];
     ssize_t len = readlink("/proc/self/exe", buf, sizeof(buf) - 1);
@@ -27,7 +30,7 @@ std::string get_executable_path()
 #ifdef __MACOS__
 #include <mach-o/dyld.h>
 
-std::string get_executable_path()
+std::string Dcr::get_executable_path()
 {
     char path[PATH_MAX];
     uint32_t size = sizeof(path);
@@ -52,8 +55,6 @@ std::string get_executable_path()
     }
 }
 #endif
-
-static bool hasLog = false;
 
 Dcr::CommandParser::CommandParser(int c, char **v) : argc(c), argv(v)
 {
@@ -143,7 +144,7 @@ void Dcr::CommandParser::_InterAction()
     {
         std::cout << std::endl;
         std::cout << "*** Commands ***" << std::endl;
-        std::cout << "1: default\t2: config\t3: result" << std::endl;
+        std::cout << "1: register\t2: config\t3: dry-run" << std::endl;
         std::cout << "4: generate\t5: quit\t\t6: help\t" << std::endl;
         std::cout << "What now> ";
         char in;
@@ -151,17 +152,23 @@ void Dcr::CommandParser::_InterAction()
         switch (in)
         {
             case '1':
-            case 'd':
+            case 'r':
+                if (__DefaultRegister())
+                {
+                }
                 break;
             case '2':
             case 'c':
+                if (__GenerateConfig())
+                {
+                }
                 break;
             case '3':
-            case 'r':
+            case 'd':
             {
                 ViewConfig viewConfig;
                 std::string configPath;
-                configPath = get_executable_path() + "/Default/Config";
+                configPath = Dcr::get_executable_path() + "/Default/Config";
                 viewConfig.SetConfigFile(configPath);
                 viewConfig.ReadConfig();
                 viewConfig.PrintLog();
@@ -270,10 +277,34 @@ bool Dcr::CommandParser::__CheckPath(std::string &path)
 bool Dcr::CommandParser::__DefaultGenerate()
 {
     ViewConfig viewConfig;
+    // std::string configPath;
+    std::string targetPath;
+    // configPath = Dcr::get_executable_path() + "/Default/Config";
+    targetPath = Dcr::get_executable_path() + "/Default/Path";
+    // viewConfig.SetConfigFile(configPath); // 读取配置文件
+    // viewConfig.ReadConfig();
+    std::ifstream pathFile{targetPath};
+    if (!pathFile.is_open())
+    {
+        std::cerr << "can not open Path file" << std::endl;
+        return false;
+    }
+    pathFile >> targetPath;
+    pathFile.close();
+    return __ImplementBehaviortreeFunction(targetPath);
+    // Dcr::Processor processorFile{targetPath, hasLog};
+    // processorFile.ImplementBehaviorFunction(viewConfig.GetFunctionInfo()); // 生成函数实现
+    // processorFile.PrintInfo();
+    // return true;
+}
+
+bool Dcr::CommandParser::__DefaultRegister()
+{
+    ViewConfig viewConfig;
     std::string configPath;
     std::string targetPath;
-    configPath = get_executable_path() + "/Default/Config";
-    targetPath = get_executable_path() + "/Default/Path";
+    configPath = Dcr::get_executable_path() + "/Default/Config";
+    targetPath = Dcr::get_executable_path() + "/Default/Path";
     viewConfig.SetConfigFile(configPath); // 读取配置文件
     viewConfig.ReadConfig();
     std::ifstream pathFile{targetPath};
@@ -283,9 +314,27 @@ bool Dcr::CommandParser::__DefaultGenerate()
         return false;
     }
     pathFile >> targetPath;
-    Dcr::Processor processorFile{targetPath, hasLog};
-    processorFile.ImplementBehaviorFunction(viewConfig.GetFunctionInfo()); // 生成函数实现
-    processorFile.PrintInfo();
     pathFile.close();
+    Dcr::View viewFile{targetPath, hasLog};
+    viewFile.GenerateRegisterBehavior(viewConfig.GetFunctionInfo()); // 生成函数实现
+    return true;
+}
+
+bool Dcr::CommandParser::__GenerateConfig()
+{
+    std::string targetPath = Dcr::get_executable_path() + "/Default/Path";
+    std::ifstream pathFile{targetPath};
+    if (!pathFile.is_open())
+    {
+        std::cerr << "can not open Path file" << std::endl;
+        return false;
+    }
+    pathFile >> targetPath;
+    pathFile.close();
+    Dcr::View viewFile{targetPath, hasLog};
+    viewFile.GenerateBehaviorFunctionInfo();
+    viewFile.GetFunctionInfo();
+    Dcr::ViewConfig viewConfig;
+    viewConfig.GenerateDefautConfig(viewFile.GetFunctionInfo());
     return true;
 }

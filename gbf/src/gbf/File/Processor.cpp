@@ -25,15 +25,18 @@ void Dcr::Processor::PrintInfo()
     std::cout << "Change " << (changeCount == 1 ? "file" : "files") << " count: " << changeCount << std::endl;
 }
 
-void Dcr::Processor::ImplementBehaviorFunction(std::vector<FileFunctionInfo> fileFunctionInfo)
+void Dcr::Processor::ImplementBehaviorFunction(const std::vector<FileFunctionInfo> &fileFunctionInfo)
 {
     for (int i = 0; i < fileFunctionInfo.size(); i++)
     {
-        __ImplementBehaviorFunction(fileFunctionInfo, i);
+        if (fileFunctionInfo[i].boardName != "Base")
+        {
+            __ImplementBehaviorFunction(fileFunctionInfo, i);
+        }
     }
 }
 
-void Dcr::Processor::__ImplementBehaviorFunction(std::vector<FileFunctionInfo> fileFunctionInfo, int index)
+void Dcr::Processor::__ImplementBehaviorFunction(const std::vector<FileFunctionInfo> &fileFunctionInfo, int index)
 {
     // _GetBehaviorFunctionByOrder();
     if (index < 0 || index >= fileFunctionInfo.size())
@@ -52,28 +55,38 @@ void Dcr::Processor::__ImplementBehaviorFunction(std::vector<FileFunctionInfo> f
         if (!outFileStream.is_open())
         {
             std::cerr << "Fail to Open: " << targetFilePath << std::endl;
-            exit(-1);
+            exit(0);
         }
         if (requireFlag)
         {
             __DealLuaPath(requirePath);
             outFileStream << "local " + fileName + " = require \"" + requirePath + "\"\n\n";
         }
+        bool isBegin = true;
         for (auto iterator = fileFuncInfo.fileFunctionList.begin(); iterator != fileFuncInfo.fileFunctionList.end();
              iterator++)
         {
-            if (iterator == fileFuncInfo.fileFunctionList.begin())
+            if (iterator->isBase)
             {
-                outFileStream << __ImplementFunctionTemplate(fileName, *iterator) << std::endl;
+                continue;
             }
-            else if (iterator == fileFuncInfo.fileFunctionList.end() - 1)
+            if (isBegin)
             {
-                outFileStream << std::endl << __ImplementFunctionTemplate(fileName, *iterator);
+                isBegin = false;
+                outFileStream << __ImplementFunctionTemplate(fileName, *iterator);
             }
             else
             {
-                outFileStream << std::endl << __ImplementFunctionTemplate(fileName, *iterator) << std::endl;
+                outFileStream << std::endl << std::endl << __ImplementFunctionTemplate(fileName, *iterator);
             }
+            // else if (iterator == fileFuncInfo.fileFunctionList.end() - 1)
+            // {
+            //     outFileStream << std::endl << __ImplementFunctionTemplate(fileName, *iterator);
+            // }
+            // else
+            // {
+            //     outFileStream << std::endl << __ImplementFunctionTemplate(fileName, *iterator) << std::endl;
+            // }
         }
         if (requireFlag)
         {
@@ -126,8 +139,11 @@ void Dcr::Processor::__ImplementBehaviorFunction(std::vector<FileFunctionInfo> f
                     {
                         while (currentIterator != it)
                         {
-                            needChange = true;
-                            ss << std::endl << std::endl << __ImplementFunctionTemplate(fileName, *currentIterator);
+                            if (!currentIterator->isBase)
+                            {
+                                needChange = true;
+                                ss << std::endl << std::endl << __ImplementFunctionTemplate(fileName, *currentIterator);
+                            }
                             currentIterator++;
                         }
                         currentIterator++; // skip this function
@@ -163,8 +179,11 @@ void Dcr::Processor::__ImplementBehaviorFunction(std::vector<FileFunctionInfo> f
         {
             while (currentIterator != fileFuncInfo.fileFunctionList.end())
             {
-                needChange = true;
-                ss << std::endl << std::endl << __ImplementFunctionTemplate(fileName, *currentIterator);
+                if (!currentIterator->isBase)
+                {
+                    needChange = true;
+                    ss << std::endl << std::endl << __ImplementFunctionTemplate(fileName, *currentIterator);
+                }
                 currentIterator++;
             }
         }
