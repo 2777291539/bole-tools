@@ -40,3 +40,8 @@
 .cache/
 *.json
 Default/
+
+# Doxygen
+**/.config
+html/
+latex/
