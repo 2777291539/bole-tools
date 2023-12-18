@@ -101,6 +101,10 @@ void Dcr::ViewConfig::ReadConfig()
                     funcName += c;
                 }
             }
+            if (funcName == "CheckWinCoinsToFooter")
+            {
+                funcName = "CheckCoinsToFooter";
+            }
             info.functionName = "Behavior" + funcName;
             if (std::regex_search(line, match, selectPattern))
             {
